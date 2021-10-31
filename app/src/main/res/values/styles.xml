@@ -8,4 +8,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!--&lt;!&ndash; Application theme. &ndash;&gt;-->
+    <!--<style name="AppTheme" parent="android:Theme.Light">-->
+        <!--<item name="android:windowNoTitle">true</item>-->
+        <!--&lt;!&ndash;<item name="android:windowIsTranslucent">true</item>  &ndash;&gt;-->
+        <!--<item name="android:windowBackground">@color/windows_color</item>-->
+    <!--</style>-->
 </resources>
