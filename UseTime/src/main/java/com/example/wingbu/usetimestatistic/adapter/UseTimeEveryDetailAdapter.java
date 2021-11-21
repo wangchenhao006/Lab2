@@ -49,7 +49,8 @@ public class UseTimeEveryDetailAdapter extends RecyclerView.Adapter<UseTimeEvery
         }
 
         holder.tv_activity_name.setText(mOneTimeDetailEventInfoList.get( position * 2 ).getClassName());
-        holder.tv_activity_total_use_time.setText((mOneTimeDetailEventInfoList.get( position * 2 + 1).getTimeStamp() - mOneTimeDetailEventInfoList.get( position * 2 ).getTimeStamp())/1000+"s / " + (mOneTimeDetailEventInfoList.get( position * 2 + 1).getTimeStamp() - mOneTimeDetailEventInfoList.get( position * 2 ).getTimeStamp())+" ms");
+        holder.tv_activity_total_use_time.setText((mOneTimeDetailEventInfoList.get( position * 2 + 1).getTimeStamp() - mOneTimeDetailEventInfoList.get( position * 2 ).getTimeStamp())/1000+"s  ");
+//                + (mOneTimeDetailEventInfoList.get( position * 2 + 1).getTimeStamp() - mOneTimeDetailEventInfoList.get( position * 2 ).getTimeStamp())+" ms");
         holder.tv_start_used_time.setText(DateTransUtils.stampToDate(mOneTimeDetailEventInfoList.get(position * 2).getTimeStamp()));
         holder.tv_stop_used_time.setText(DateTransUtils.stampToDate(mOneTimeDetailEventInfoList.get( position * 2 + 1).getTimeStamp()));
     }

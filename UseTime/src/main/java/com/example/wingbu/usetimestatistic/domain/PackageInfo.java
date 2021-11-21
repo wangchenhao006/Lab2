@@ -1,5 +1,7 @@
 package com.example.wingbu.usetimestatistic.domain;
 
+import org.greenrobot.greendao.annotation.Entity;
+
 /**
  * 统计数据---记录每个应用的包名，使用时长和使用次数
  *

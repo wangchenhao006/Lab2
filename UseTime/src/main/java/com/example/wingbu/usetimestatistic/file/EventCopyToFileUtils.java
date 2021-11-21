@@ -2,10 +2,18 @@ package com.example.wingbu.usetimestatistic.file;
 
 import android.annotation.TargetApi;
 import android.app.usage.UsageEvents;
+import android.app.usage.UsageStats;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
+import com.example.wingbu.usetimestatistic.dao.AppInfoDao;
+import com.example.wingbu.usetimestatistic.dao.DaoSession;
+import com.example.wingbu.usetimestatistic.dao.GreenDaoManager;
+import com.example.wingbu.usetimestatistic.domain.AppInfo;
+import com.example.wingbu.usetimestatistic.domain.EventTypeEnum;
+import com.example.wingbu.usetimestatistic.domain.UseTimeDataManager;
+import com.example.wingbu.usetimestatistic.ui.BaseActivity;
 import com.example.wingbu.usetimestatistic.utils.DateTransUtils;
 import com.example.wingbu.usetimestatistic.utils.EventUtils;
 import com.example.wingbu.usetimestatistic.utils.StringUtils;
@@ -26,13 +34,17 @@ public class EventCopyToFileUtils {
     public  static final String BASE_FILE_PATH  = "/data/data/com.example.wingbu.usetimestatistic/files/event_copy";
     public  static final int    MAX_FILE_NUMBER = 7;
 
+    private UseTimeDataManager mUseTimeDataManager;
+
+
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public static void write(Context context, long startTime, long endTime){
+    public static String write(Context context, long startTime, long endTime){
 
         ArrayList<UsageEvents.Event> eventList = EventUtils.getEventList(context, startTime, endTime);
 
         if(eventList == null || eventList.size() == 0){
-            return;
+            return null;
         }
 
         long fileName = DateTransUtils.getZeroClockTimestamp(startTime);
@@ -46,16 +58,19 @@ public class EventCopyToFileUtils {
             UsageEvents.Event lastEvent = null;
 
             for (int i = 0 ; i < eventList.size() ; i++){
-                if(context.getPackageName().equals(eventList.get(i).getPackageName())){
-                    Log.i(TAG,"   "+eventList.get(i).getClassName());
-                    UsageEvents.Event thisEvent = eventList.get(i);
+                UsageEvents.Event thisEvent = eventList.get(i);
+                if(context.getPackageName().equals(thisEvent.getPackageName())){
+                    Log.i(TAG,"   "+thisEvent.getClassName());
                     if(lastEvent != null && lastEvent.getEventType() == 1 && thisEvent.getEventType() == 2 && lastEvent.getClassName().equals(thisEvent.getClassName())){
                         writer.write(StringUtils.getInputString(thisEvent.getTimeStamp(),thisEvent.getClassName(),thisEvent.getEventType(),thisEvent.getTimeStamp()-lastEvent.getTimeStamp()));
+
                     }else {
                         writer.write(StringUtils.getInputString(thisEvent.getTimeStamp(),thisEvent.getClassName(),thisEvent.getEventType(),0));
                     }
                     lastEvent = thisEvent;
                 }
+
+
             }
             writer.close();
             Log.i(TAG," WriteRecordFileUtils--writeToFile()  写入文件成功 " + fileName);
@@ -63,6 +78,7 @@ public class EventCopyToFileUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return filePath;
     }
 
     private static void checkFile(String filePath){

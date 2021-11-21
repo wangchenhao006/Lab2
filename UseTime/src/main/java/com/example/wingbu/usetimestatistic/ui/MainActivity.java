@@ -2,15 +2,17 @@ package com.example.wingbu.usetimestatistic.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
-import android.widget.Toast;
+import android.widget.*;
 
 import com.example.wingbu.usetimestatistic.R;
 import com.example.wingbu.usetimestatistic.adapter.SelectDateAdapter;
@@ -30,10 +32,13 @@ import java.util.ArrayList;
  */
 public class MainActivity extends BaseActivity {
 
+    private Handler handler = new Handler();
     private LinearLayout       mLlSelectDate;
     private Button             mBtnDate;
     private PopupWindow        mPopupWindow;
     private RecyclerView       mRvSelectDate;
+    private EditText mSearchView;
+    static TextView  textView ;
 
     private RecyclerView       mRecyclerView;
     private UseTimeAdapter     mUseTimeAdapter;
@@ -61,6 +66,8 @@ public class MainActivity extends BaseActivity {
         mLlSelectDate = (LinearLayout) findViewById(R.id.ll_select_date);
         mBtnDate = (Button) findViewById(R.id.tv_date);
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_show_statistics);
+        mSearchView = (EditText) findViewById(R.id.et_search);
+        textView = mActionBar.getCustomView().findViewById(R.id.action_bar_title);
         showView(dayNum);
     }
 
@@ -91,7 +98,27 @@ public class MainActivity extends BaseActivity {
         });
         mRecyclerView.setAdapter(mUseTimeAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mSearchView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+                textView.setVisibility(View.INVISIBLE);
+                mUseTimeAdapter.modifyData(mUseTimeDataManager.getmPackageInfoListOrderByTime());
+                mUseTimeAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int count, int after) {
+                Log.d( "", "onTextChanged: "+charSequence.toString());
+                mUseTimeAdapter.getFilter().filter(charSequence.toString());
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
     }
+
 
     private void showDetail(String pkg){
         Intent i = new Intent();

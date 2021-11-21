@@ -10,6 +10,8 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,16 +21,18 @@ import com.example.wingbu.usetimestatistic.domain.PackageInfo;
 import com.example.wingbu.usetimestatistic.domain.UseTimeDataManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Wingbu on 2017/7/19.
  */
 
-public class UseTimeAdapter extends RecyclerView.Adapter<UseTimeAdapter.UseTimeViewHolder>{
+public class UseTimeAdapter extends RecyclerView.Adapter<UseTimeAdapter.UseTimeViewHolder> implements Filterable {
 
     private ArrayList<PackageInfo> mPackageInfoList;
     private PackageManager packageManager;
     private UseTimeDataManager mUseTimeDataManager;
+    ArrayList<PackageInfo> mFilterList = new ArrayList<PackageInfo>();
 
     private OnRecyclerViewItemClickListener mOnItemClickListener = null;
 
@@ -40,6 +44,47 @@ public class UseTimeAdapter extends RecyclerView.Adapter<UseTimeAdapter.UseTimeV
     public void modifyData(ArrayList<PackageInfo> List){
         mPackageInfoList = List;
     }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            //执行过滤操作
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    //没有过滤的内容，则使用源数据
+                    mFilterList = mPackageInfoList;
+                } else {
+                    ArrayList<PackageInfo> filteredList = new ArrayList<>();
+                    for (PackageInfo packageInfo : mPackageInfoList) {
+                        //这里根据需求，添加匹配规则
+                        if (packageInfo.getmPackageName().contains(charString)) {
+                            filteredList.add(packageInfo);
+                        }
+                    }
+
+                    mFilterList = filteredList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = mFilterList;
+                return filterResults;
+            }
+            //把过滤后的值返回出来
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                mPackageInfoList = (ArrayList<PackageInfo>) filterResults.values;
+
+                notifyDataSetChanged();
+//                mUseTimeDataManager.refreshPackageInfoList();
+//                mUseTimeDataManager.sendEventBus();
+            }
+        };
+    }
+
+//    public void refresh() {
+//    }
 
     //define interface
     public  interface OnRecyclerViewItemClickListener {
@@ -67,8 +112,12 @@ public class UseTimeAdapter extends RecyclerView.Adapter<UseTimeAdapter.UseTimeV
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+        holder.app_name.setText("" + mPackageInfoList.get(position).getmPackageName()+"" );
+
         holder.tv_used_count.setText(" " + mPackageInfoList.get(position).getmUsedCount()+"");
-        holder.tv_calculate_used_time.setText(" " + mPackageInfoList.get(position).getmUsedTime()/1000+"s / " + DateUtils.formatElapsedTime(mPackageInfoList.get(position).getmUsedTime()/1000));
+
+//        holder.tv_calculate_used_time.setText(" " + mPackageInfoList.get(position).getmUsedTime()/1000+"s / " + DateUtils.formatElapsedTime(mPackageInfoList.get(position).getmUsedTime()/1000));
+
         //DateTransUtils.formatElapsedTime(mPackageInfoList.get(position).getmUsedTime()/1000)
         holder.tv_used_time.setText(" " + getTotalTimeFromUsage(mPackageInfoList.get(position).getmPackageName())/1000+" s");
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -93,15 +142,18 @@ public class UseTimeAdapter extends RecyclerView.Adapter<UseTimeAdapter.UseTimeV
         public TextView   tv_used_count;
         public TextView   tv_used_time;
         public TextView   tv_calculate_used_time;
+        public TextView   app_name;
+
 
 
         public UseTimeViewHolder(View itemView) {
             super(itemView);
+            app_name = itemView.findViewById(R.id.app_name);
             tv_index = (TextView) itemView.findViewById(R.id.index);
             iv_icon = (ImageView) itemView.findViewById(R.id.app_icon);
             tv_used_count = (TextView) itemView.findViewById(R.id.use_count);
             tv_used_time = (TextView) itemView.findViewById(R.id.use_time);
-            tv_calculate_used_time = (TextView) itemView.findViewById(R.id.calculate_use_time);
+//            tv_calculate_used_time = (TextView) itemView.findViewById(R.id.calculate_use_time);
         }
     }
 

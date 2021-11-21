@@ -2,9 +2,15 @@ package com.example.wingbu.usetimestatistic;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.wingbu.usetimestatistic.dao.DaoMaster;
+import com.example.wingbu.usetimestatistic.dao.DaoSession;
+import com.example.wingbu.usetimestatistic.dao.GreenDaoManager;
 import com.example.wingbu.usetimestatistic.file.WriteRecordFileUtils;
 import com.example.wingbu.usetimestatistic.utils.StringUtils;
 
@@ -44,7 +50,12 @@ public class UseTimeApplication extends Application{
         this.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-
+                Intent serviceIntent = new Intent(UseTimeApplication.this, EventService.class);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(serviceIntent);
+                } else {
+                    startService(serviceIntent);
+                }
             }
 
             @Override
@@ -90,7 +101,23 @@ public class UseTimeApplication extends Application{
             }
         });
 
+//        initGreenDao();
+        GreenDaoManager.getInstance();
+
     }
+
+    private void initGreenDao() {
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "aserbao.db");
+        SQLiteDatabase db = helper.getWritableDatabase();
+        DaoMaster daoMaster = new DaoMaster(db);
+        daoSession = daoMaster.newSession();
+    }
+
+    private DaoSession daoSession;
+    public DaoSession getDaoSession() {
+        return daoSession;
+    }
+
 
     private void resetData(long timeStamp , String className,int type){
         lastTime = timeStamp;

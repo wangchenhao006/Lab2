@@ -210,6 +210,17 @@ public class UseTimeDataManager {
         return mList;
     }
 
+    public UsageEvents.Event getLastEvent(String pkgName){
+        UsageEvents.Event event = null;
+        ArrayList<UsageEvents.Event> eventList = getEventList(0);
+        for(int i = 0; i < eventList.size() ; i++){
+            if(eventList.get(i).getPackageName().equals(pkgName)){
+                event = eventList.get(i);
+            }
+        }
+        return event;
+    }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private ArrayList<UsageEvents.Event> getEventListCheckWithoutErrorData(){
         ArrayList<UsageEvents.Event> mList = new ArrayList<>();
@@ -352,7 +363,7 @@ public class UseTimeDataManager {
     }
 
     // 利用反射，获取UsageStats中统计的应用使用次数
-    private int getLaunchCount(UsageStats usageStats) throws IllegalAccessException {
+    public int getLaunchCount(UsageStats usageStats) throws IllegalAccessException {
         Field field = null;
         try {
             field = usageStats.getClass().getDeclaredField("mLaunchCount");

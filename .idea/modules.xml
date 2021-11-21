@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/UseTime/UseTime.iml" filepath="$PROJECT_DIR$/UseTime/UseTime.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/UseTimeStatistic.iml" filepath="$PROJECT_DIR$/.idea/UseTimeStatistic.iml" />
       <module fileurl="file://$PROJECT_DIR$/UseTimeStatistic.iml" filepath="$PROJECT_DIR$/UseTimeStatistic.iml" />
     </modules>
   </component>
